@@ -1,10 +1,11 @@
 <template>
-  <div class="min-h-screen relative overflow-hidden" style="background: linear-gradient(180deg, #4A6CF7 0%, #6B4CE8 50%, #8B5CF6 100%);">
-    <div class="absolute inset-0 opacity-20">
-      <div class="absolute top-10 left-10 w-32 h-32 bg-white rounded-full blur-3xl"></div>
-      <div class="absolute bottom-20 right-10 w-40 h-40 bg-yellow-300 rounded-full blur-3xl"></div>
-      <div class="absolute top-1/2 left-1/4 w-24 h-24 bg-pink-300 rounded-full blur-2xl"></div>
-    </div>
+  <div class="min-h-screen relative overflow-hidden">
+    <img 
+      src="https://neeko-copilot.bytedance.net/api/text_to_image?prompt=cartoon%20school%20campus%20background%20with%20blue%20sky%20clouds%20green%20grass%20building%20fountain%20benches%20trees%20sunny%20day%20animated%20style&image_size=portrait_16_9" 
+      alt="背景" 
+      class="absolute inset-0 w-full h-full object-cover"
+    />
+    <div class="absolute inset-0 bg-black/10"></div>
 
     <div class="relative z-10 p-4">
       <div class="flex items-center justify-between mb-6">
@@ -13,19 +14,19 @@
             <span class="text-white text-xl font-bold">{{ userStore.nickname.charAt(0) }}</span>
           </div>
           <div class="flex items-center gap-2">
-            <span class="text-lg font-bold text-white">{{ userStore.nickname }}</span>
+            <span class="text-lg font-bold text-white drop-shadow-lg">{{ userStore.nickname }}</span>
             <span class="text-xl">{{ userStore.gender === 1 ? '👨' : userStore.gender === 2 ? '👩' : '👤' }}</span>
           </div>
         </div>
 
         <div class="flex items-center gap-4">
-          <div class="flex items-center gap-1 bg-white/20 px-3 py-1.5 rounded-full">
+          <div class="flex items-center gap-1 bg-white/90 backdrop-blur-sm px-3 py-1.5 rounded-full shadow-lg">
             <span class="text-xl">💎</span>
-            <span class="text-white font-bold">{{ userStore.currentPoints }}</span>
+            <span class="font-bold text-gray-700">{{ userStore.currentPoints }}</span>
           </div>
-          <div class="flex items-center gap-1 bg-white/20 px-3 py-1.5 rounded-full">
+          <div class="flex items-center gap-1 bg-white/90 backdrop-blur-sm px-3 py-1.5 rounded-full shadow-lg">
             <span class="text-xl">❤️</span>
-            <span class="text-white font-bold">{{ userStore.lives }}/5</span>
+            <span class="font-bold text-gray-700">{{ userStore.lives }}/5</span>
           </div>
         </div>
       </div>
@@ -34,21 +35,21 @@
         <div class="flex flex-col gap-3 w-24">
           <button 
             @click="handleSignIn" 
-            class="flex flex-col items-center gap-2 p-4 bg-white/90 backdrop-blur-sm rounded-2xl shadow-lg hover:shadow-xl transition-all hover:-translate-y-1"
+            class="flex flex-col items-center gap-2 p-4 bg-white/95 backdrop-blur-sm rounded-2xl shadow-lg hover:shadow-xl transition-all hover:-translate-y-1"
           >
             <span class="text-3xl">📅</span>
             <span class="text-xs font-bold text-gray-700">每日签到</span>
           </button>
           <button 
             @click="$router.push('/shop')" 
-            class="flex flex-col items-center gap-2 p-4 bg-white/90 backdrop-blur-sm rounded-2xl shadow-lg hover:shadow-xl transition-all hover:-translate-y-1"
+            class="flex flex-col items-center gap-2 p-4 bg-white/95 backdrop-blur-sm rounded-2xl shadow-lg hover:shadow-xl transition-all hover:-translate-y-1"
           >
             <span class="text-3xl">🛒</span>
             <span class="text-xs font-bold text-gray-700">积分商城</span>
           </button>
           <button 
             @click="handleLottery" 
-            class="flex flex-col items-center gap-2 p-4 bg-white/90 backdrop-blur-sm rounded-2xl shadow-lg hover:shadow-xl transition-all hover:-translate-y-1"
+            class="flex flex-col items-center gap-2 p-4 bg-white/95 backdrop-blur-sm rounded-2xl shadow-lg hover:shadow-xl transition-all hover:-translate-y-1"
           >
             <span class="text-3xl">🎰</span>
             <span class="text-xs font-bold text-gray-700">积分抽奖</span>
@@ -57,10 +58,12 @@
 
         <div class="flex-1 flex flex-col items-center justify-end pb-4">
           <div class="relative mb-4">
-            <div class="w-32 h-32 rounded-full bg-gradient-to-br from-yellow-300 to-orange-400 flex items-center justify-center border-4 border-white shadow-xl">
-              <span class="text-5xl">🧙</span>
-            </div>
-            <div class="absolute -bottom-2 left-1/2 -translate-x-1/2 px-3 py-1 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full">
+            <img 
+              src="https://neeko-copilot.bytedance.net/api/text_to_image?prompt=cute%20cartoon%20boy%20character%20brown%20hair%20big%20eyes%20blue%20white%20shirt%20black%20shorts%20yellow%20shoes%20standing%20full%20body%20transparent%20background%20animated%20style&image_size=square" 
+              alt="人物形象" 
+              class="w-40 h-48 object-contain drop-shadow-2xl"
+            />
+            <div class="absolute -bottom-2 left-1/2 -translate-x-1/2 px-4 py-1.5 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full shadow-lg">
               <span class="text-white text-xs font-bold">{{ userStore.levelName }}</span>
             </div>
           </div>
@@ -86,14 +89,14 @@
         <div class="flex flex-col gap-3 w-24">
           <button 
             @click="startQuiz('daily')" 
-            class="flex flex-col items-center gap-2 p-4 bg-white/90 backdrop-blur-sm rounded-2xl shadow-lg hover:shadow-xl transition-all hover:-translate-y-1"
+            class="flex flex-col items-center gap-2 p-4 bg-white/95 backdrop-blur-sm rounded-2xl shadow-lg hover:shadow-xl transition-all hover:-translate-y-1"
           >
             <span class="text-3xl">🎯</span>
             <span class="text-xs font-bold text-gray-700">每日挑战</span>
           </button>
           <button 
             @click="startQuiz('level')" 
-            class="flex flex-col items-center gap-2 p-4 bg-white/90 backdrop-blur-sm rounded-2xl shadow-lg hover:shadow-xl transition-all hover:-translate-y-1"
+            class="flex flex-col items-center gap-2 p-4 bg-white/95 backdrop-blur-sm rounded-2xl shadow-lg hover:shadow-xl transition-all hover:-translate-y-1"
           >
             <span class="text-3xl">🏰</span>
             <span class="text-xs font-bold text-gray-700">个人闯关</span>
