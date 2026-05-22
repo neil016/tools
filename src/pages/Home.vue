@@ -1,11 +1,35 @@
 <template>
-  <div class="min-h-screen relative overflow-hidden" style="background: linear-gradient(180deg, #87CEEB 0%, #98D8C8 40%, #F7DC6F 100%);">
+  <div class="min-h-screen relative overflow-hidden" style="background: linear-gradient(180deg, #87CEEB 0%, #B0E0E6 30%, #98FB98 70%, #90EE90 100%);">
     <div class="absolute inset-0 overflow-hidden pointer-events-none">
-      <div class="absolute top-10 left-20 w-16 h-16 bg-white rounded-full opacity-60 blur-sm"></div>
-      <div class="absolute top-8 right-32 w-24 h-24 bg-white rounded-full opacity-50 blur-sm"></div>
-      <div class="absolute top-20 left-1/3 w-12 h-12 bg-white rounded-full opacity-40 blur-sm"></div>
-      <div class="absolute bottom-20 left-1/4 w-32 h-32 bg-green-200 rounded-full opacity-30 blur-xl"></div>
-      <div class="absolute bottom-10 right-1/4 w-24 h-24 bg-green-300 rounded-full opacity-25 blur-xl"></div>
+      <div class="absolute top-8 left-16 w-20 h-20 bg-white rounded-full opacity-70 blur-sm"></div>
+      <div class="absolute top-4 right-24 w-28 h-28 bg-white rounded-full opacity-60 blur-sm"></div>
+      <div class="absolute top-16 left-1/2 w-16 h-16 bg-white rounded-full opacity-50 blur-sm"></div>
+      <div class="absolute top-6 left-1/3 w-12 h-12 bg-white rounded-full opacity-40 blur-sm"></div>
+      
+      <div class="absolute bottom-0 left-0 right-0 h-40">
+        <div class="absolute bottom-0 left-0 right-0 h-24 bg-gradient-to-t from-green-500 to-transparent opacity-30"></div>
+        <div class="absolute bottom-20 left-10 w-8 h-20 bg-green-600 rounded-t-full opacity-60"></div>
+        <div class="absolute bottom-16 left-16 w-6 h-16 bg-green-600 rounded-t-full opacity-50"></div>
+        <div class="absolute bottom-12 left-24 w-12 h-24 bg-green-500 rounded-t-full opacity-40"></div>
+        <div class="absolute bottom-24 right-16 w-10 h-22 bg-green-600 rounded-t-full opacity-50"></div>
+        <div class="absolute bottom-18 right-28 w-8 h-18 bg-green-500 rounded-t-full opacity-40"></div>
+        <div class="absolute bottom-20 right-10 w-6 h-14 bg-green-600 rounded-t-full opacity-60"></div>
+      </div>
+
+      <div class="absolute bottom-32 left-1/4 w-32 h-20 bg-amber-200 rounded-t-lg opacity-80"></div>
+      <div class="absolute bottom-44 left-1/3 w-48 h-32 bg-amber-100 rounded-t-lg">
+        <div class="absolute top-4 left-4 w-16 h-16 border-4 border-amber-300 rounded"></div>
+        <div class="absolute top-6 left-6 w-12 h-12 bg-sky-300 rounded"></div>
+        <div class="absolute top-2 left-1/2 -translate-x-1/2 w-20 h-12 bg-red-500 rounded-t"></div>
+        <div class="absolute top-0 left-1/2 -translate-x-1/2 w-4 h-4 bg-amber-400 rounded-full"></div>
+      </div>
+      
+      <div class="absolute bottom-40 right-1/4 w-24 h-16 bg-amber-200 rounded-t-lg opacity-70"></div>
+      
+      <div class="absolute bottom-36 right-1/3 w-16 h-12 bg-blue-300 rounded-full opacity-60"></div>
+      <div class="absolute bottom-44 right-1/3 w-4 h-4 bg-blue-400 rounded-full opacity-70 animate-bounce"></div>
+      <div class="absolute bottom-48 right-1/3 w-3 h-3 bg-blue-400 rounded-full opacity-60 animate-bounce" style="animation-delay: 0.2s"></div>
+      <div class="absolute bottom-52 right-1/3 w-2 h-2 bg-blue-400 rounded-full opacity-50 animate-bounce" style="animation-delay: 0.4s"></div>
     </div>
 
     <div class="relative z-10 p-4">
@@ -59,9 +83,19 @@
 
         <div class="flex-1 flex flex-col items-center justify-end pb-4">
           <div class="relative mb-4">
-            <div class="w-36 h-44 bg-gradient-to-b from-white/80 to-white/90 rounded-3xl flex flex-col items-center justify-center border-4 border-white shadow-xl">
-              <div class="text-6xl mb-2">🧑‍🎓</div>
-              <div class="text-xs text-gray-500 mt-2">天天学苑</div>
+            <div class="w-36 h-44 bg-gradient-to-b from-white/90 to-white/95 rounded-3xl flex flex-col items-center justify-center border-4 border-white shadow-xl">
+              <div class="relative">
+                <div class="w-20 h-20 bg-gradient-to-br from-amber-200 to-amber-300 rounded-full flex items-center justify-center">
+                  <span class="text-5xl">🧑‍🎓</span>
+                </div>
+                <div class="absolute -bottom-1 -right-1 w-8 h-8 bg-gradient-to-br from-blue-400 to-purple-500 rounded-full flex items-center justify-center border-2 border-white">
+                  <span class="text-xs font-bold text-white">Lv.{{ userStore.level }}</span>
+                </div>
+              </div>
+              <div class="text-center mt-3">
+                <div class="text-sm font-bold text-gray-700">天天学苑</div>
+                <div class="text-xs text-gray-500 mt-1">知识小达人</div>
+              </div>
             </div>
             <div class="absolute -bottom-2 left-1/2 -translate-x-1/2 px-4 py-1.5 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full shadow-lg">
               <span class="text-white text-xs font-bold">{{ userStore.levelName }}</span>
