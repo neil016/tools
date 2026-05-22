@@ -1,38 +1,14 @@
 <template>
-  <div class="min-h-screen relative overflow-hidden" style="background: linear-gradient(180deg, #87CEEB 0%, #B0E0E6 30%, #98FB98 70%, #90EE90 100%);">
-    <div class="absolute inset-0 overflow-hidden pointer-events-none">
-      <div class="absolute top-8 left-16 w-20 h-20 bg-white rounded-full opacity-70 blur-sm"></div>
-      <div class="absolute top-4 right-24 w-28 h-28 bg-white rounded-full opacity-60 blur-sm"></div>
-      <div class="absolute top-16 left-1/2 w-16 h-16 bg-white rounded-full opacity-50 blur-sm"></div>
-      <div class="absolute top-6 left-1/3 w-12 h-12 bg-white rounded-full opacity-40 blur-sm"></div>
-      
-      <div class="absolute bottom-0 left-0 right-0 h-40">
-        <div class="absolute bottom-0 left-0 right-0 h-24 bg-gradient-to-t from-green-500 to-transparent opacity-30"></div>
-        <div class="absolute bottom-20 left-10 w-8 h-20 bg-green-600 rounded-t-full opacity-60"></div>
-        <div class="absolute bottom-16 left-16 w-6 h-16 bg-green-600 rounded-t-full opacity-50"></div>
-        <div class="absolute bottom-12 left-24 w-12 h-24 bg-green-500 rounded-t-full opacity-40"></div>
-        <div class="absolute bottom-24 right-16 w-10 h-22 bg-green-600 rounded-t-full opacity-50"></div>
-        <div class="absolute bottom-18 right-28 w-8 h-18 bg-green-500 rounded-t-full opacity-40"></div>
-        <div class="absolute bottom-20 right-10 w-6 h-14 bg-green-600 rounded-t-full opacity-60"></div>
-      </div>
-
-      <div class="absolute bottom-32 left-1/4 w-32 h-20 bg-amber-200 rounded-t-lg opacity-80"></div>
-      <div class="absolute bottom-44 left-1/3 w-48 h-32 bg-amber-100 rounded-t-lg">
-        <div class="absolute top-4 left-4 w-16 h-16 border-4 border-amber-300 rounded"></div>
-        <div class="absolute top-6 left-6 w-12 h-12 bg-sky-300 rounded"></div>
-        <div class="absolute top-2 left-1/2 -translate-x-1/2 w-20 h-12 bg-red-500 rounded-t"></div>
-        <div class="absolute top-0 left-1/2 -translate-x-1/2 w-4 h-4 bg-amber-400 rounded-full"></div>
-      </div>
-      
-      <div class="absolute bottom-40 right-1/4 w-24 h-16 bg-amber-200 rounded-t-lg opacity-70"></div>
-      
-      <div class="absolute bottom-36 right-1/3 w-16 h-12 bg-blue-300 rounded-full opacity-60"></div>
-      <div class="absolute bottom-44 right-1/3 w-4 h-4 bg-blue-400 rounded-full opacity-70 animate-bounce"></div>
-      <div class="absolute bottom-48 right-1/3 w-3 h-3 bg-blue-400 rounded-full opacity-60 animate-bounce" style="animation-delay: 0.2s"></div>
-      <div class="absolute bottom-52 right-1/3 w-2 h-2 bg-blue-400 rounded-full opacity-50 animate-bounce" style="animation-delay: 0.4s"></div>
-    </div>
-
+  <div class="min-h-screen relative overflow-hidden">
+    <!-- 校园背景图 -->
+    <img 
+      src="https://neeko-copilot.bytedance.net/api/text_to_image?prompt=cartoon%20school%20campus%20scene%20building%20with%20red%20flag%20blue%20sky%20white%20clouds%20green%20lawn%20fountain%20benches%20trees%20sunny%20day%20animated%20style%20天天学苑&image_size=portrait_16_9" 
+      alt="校园背景" 
+      class="absolute inset-0 w-full h-full object-cover"
+    />
+    
     <div class="relative z-10 p-4">
+      <!-- 顶部信息栏 -->
       <div class="flex items-center justify-between mb-6">
         <div class="flex items-center gap-3">
           <div class="w-14 h-14 rounded-full bg-gradient-to-r from-yellow-400 to-orange-500 flex items-center justify-center border-3 border-white shadow-lg">
@@ -56,7 +32,9 @@
         </div>
       </div>
 
+      <!-- 主要内容区域 -->
       <div class="flex justify-between">
+        <!-- 左侧功能按钮 -->
         <div class="flex flex-col gap-3 w-24">
           <button 
             @click="handleSignIn" 
@@ -81,27 +59,22 @@
           </button>
         </div>
 
+        <!-- 中间人物形象 -->
         <div class="flex-1 flex flex-col items-center justify-end pb-4">
           <div class="relative mb-4">
-            <div class="w-36 h-44 bg-gradient-to-b from-white/90 to-white/95 rounded-3xl flex flex-col items-center justify-center border-4 border-white shadow-xl">
-              <div class="relative">
-                <div class="w-20 h-20 bg-gradient-to-br from-amber-200 to-amber-300 rounded-full flex items-center justify-center">
-                  <span class="text-5xl">🧑‍🎓</span>
-                </div>
-                <div class="absolute -bottom-1 -right-1 w-8 h-8 bg-gradient-to-br from-blue-400 to-purple-500 rounded-full flex items-center justify-center border-2 border-white">
-                  <span class="text-xs font-bold text-white">Lv.{{ userStore.level }}</span>
-                </div>
-              </div>
-              <div class="text-center mt-3">
-                <div class="text-sm font-bold text-gray-700">天天学苑</div>
-                <div class="text-xs text-gray-500 mt-1">知识小达人</div>
-              </div>
-            </div>
+            <!-- 人物形象图 -->
+            <img 
+              src="https://neeko-copilot.bytedance.net/api/text_to_image?prompt=cute%20cartoon%20boy%20character%20brown%20hair%20big%20round%20eyes%20blue%20white%20long%20sleeve%20shirt%20black%20shorts%20yellow%20shoes%20standing%20full%20body%20transparent%20background%20kawaii%20style&image_size=square" 
+              alt="人物形象" 
+              class="w-40 h-48 object-contain drop-shadow-2xl"
+            />
+            <!-- 等级标签 -->
             <div class="absolute -bottom-2 left-1/2 -translate-x-1/2 px-4 py-1.5 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full shadow-lg">
               <span class="text-white text-xs font-bold">{{ userStore.levelName }}</span>
             </div>
           </div>
 
+          <!-- 升级进度条 -->
           <div class="w-full max-w-xs bg-white/90 backdrop-blur-sm rounded-2xl p-4 shadow-lg">
             <div class="flex justify-between text-sm mb-2">
               <span class="text-gray-600">升级进度</span>
@@ -120,6 +93,7 @@
           </div>
         </div>
 
+        <!-- 右侧功能按钮 -->
         <div class="flex flex-col gap-3 w-24">
           <button 
             @click="startQuiz('daily')" 
@@ -145,6 +119,7 @@
         </div>
       </div>
 
+      <!-- 底部个人中心按钮 -->
       <div class="mt-6 flex justify-center">
         <button 
           @click="$router.push('/profile')" 
@@ -156,6 +131,7 @@
       </div>
     </div>
 
+    <!-- 签到弹窗 -->
     <div v-if="showSignInModal" class="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
       <div class="bg-white rounded-2xl text-center max-w-sm w-full p-6 shadow-2xl animate-bounce-in">
         <div class="text-6xl mb-4">🎉</div>
@@ -166,6 +142,7 @@
       </div>
     </div>
 
+    <!-- 抽奖弹窗 -->
     <div v-if="showLotteryModal" class="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
       <div class="bg-white rounded-2xl text-center max-w-sm w-full p-6 shadow-2xl">
         <div class="text-6xl mb-4">🎰</div>
@@ -185,6 +162,7 @@
       </div>
     </div>
 
+    <!-- 抽奖结果弹窗 -->
     <div v-if="showLotteryResult" class="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
       <div class="bg-white rounded-2xl text-center max-w-sm w-full p-6 shadow-2xl animate-bounce-in">
         <div class="text-6xl mb-4">{{ lotteryPrize.icon }}</div>
