@@ -1,14 +1,17 @@
-:root {
-  --primary-color: #FF6B6B;
-  --secondary-color: #4ECDC4;
-  --gold-color: #FFD700;
-  --text-color: #333;
-  --bg-color: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
 }
 
 body {
+  font-family: 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   min-height: 100vh;
-  background: var(--bg-color);
 }
 
 #app {
@@ -16,51 +19,30 @@ body {
   min-height: 100vh;
 }
 
-.container {
-  max-width: 400px;
-  margin: 0 auto;
-  padding: 20px;
-}
-
 .btn {
-  display: block;
-  width: 100%;
-  padding: 15px;
-  border: none;
-  border-radius: 12px;
-  font-size: 18px;
-  font-weight: bold;
-  cursor: pointer;
-  transition: all 0.3s ease;
+  @apply px-6 py-3 rounded-xl font-bold transition-all duration-300;
 }
 
 .btn-primary {
-  background: linear-gradient(135deg, #FF6B6B, #FF8E53);
-  color: white;
-}
-
-.btn-primary:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 15px rgba(255, 107, 107, 0.4);
+  @apply bg-gradient-to-r from-primary to-accent text-white shadow-lg hover:shadow-xl hover:scale-105;
 }
 
 .btn-secondary {
-  background: white;
-  color: var(--primary-color);
-  border: 2px solid var(--primary-color);
+  @apply bg-white text-primary border-2 border-primary shadow-md hover:shadow-lg;
 }
 
 .card {
-  background: white;
-  border-radius: 16px;
-  padding: 24px;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  @apply bg-white rounded-2xl shadow-xl p-6;
 }
 
-.text-center {
-  text-align: center;
+.text-gradient {
+  @apply bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent;
 }
 
-.mb-2 { margin-bottom: 8px; }
-.mb-4 { margin-bottom: 16px; }
-.mb-6 { margin-bottom: 24px; }
+.progress-bar {
+  @apply h-2 bg-gray-200 rounded-full overflow-hidden;
+}
+
+.progress-fill {
+  @apply h-full bg-gradient-to-r from-primary to-accent transition-all duration-300;
+}
