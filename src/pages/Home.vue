@@ -1,11 +1,12 @@
 <template>
   <div class="min-h-screen relative overflow-hidden">
-    <!-- 渐变背景 -->
-    <div class="absolute inset-0 bg-gradient-to-br from-sky-300 via-emerald-200 to-amber-200">
-      <div class="absolute top-10 left-10 w-40 h-40 bg-white/40 rounded-full blur-3xl"></div>
-      <div class="absolute top-32 right-20 w-56 h-56 bg-pink-200/40 rounded-full blur-3xl"></div>
-      <div class="absolute bottom-32 left-1/4 w-48 h-48 bg-yellow-200/40 rounded-full blur-3xl"></div>
-    </div>
+    <!-- 校园背景图（第一张图） -->
+    <img 
+      :src="backgroundImage"
+      alt="校园背景" 
+      class="absolute inset-0 w-full h-full object-cover"
+      crossorigin="anonymous"
+    />
     
     <div class="relative z-10 p-4">
       <!-- 顶部信息栏 -->
@@ -15,7 +16,7 @@
             <span class="text-white text-xl font-bold">{{ userStore.nickname.charAt(0) }}</span>
           </div>
           <div class="flex items-center gap-2">
-            <span class="text-lg font-bold text-gray-800 drop-shadow-lg">{{ userStore.nickname }}</span>
+            <span class="text-lg font-bold text-white drop-shadow-lg">{{ userStore.nickname }}</span>
             <span class="text-xl">{{ userStore.gender === 1 ? '👨' : userStore.gender === 2 ? '👩' : '👤' }}</span>
           </div>
         </div>
@@ -59,13 +60,16 @@
           </button>
         </div>
 
-        <!-- 中间人物形象 -->
+        <!-- 中间人物形象（第二张图） -->
         <div class="flex-1 flex flex-col items-center justify-end pb-4">
           <div class="relative mb-4">
             <!-- 人物形象 -->
-            <div class="w-40 h-48 flex items-center justify-center">
-              <div class="text-8xl animate-bounce">🧒</div>
-            </div>
+            <img 
+              :src="characterImage"
+              alt="人物形象" 
+              class="w-40 h-48 object-contain drop-shadow-2xl"
+              crossorigin="anonymous"
+            />
             <!-- 等级标签 -->
             <div class="absolute -bottom-2 left-1/2 -translate-x-1/2 px-4 py-1.5 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full shadow-lg">
               <span class="text-white text-xs font-bold">{{ userStore.levelName }}</span>
@@ -183,6 +187,12 @@ const signInResult = ref({ points: 0, days: 0 })
 const showLotteryModal = ref(false)
 const showLotteryResult = ref(false)
 const lotteryPrize = ref({ icon: '', name: '', count: 0 })
+
+// 使用您上传的图片 - 请放入 /workspace/public/ 文件夹
+// 背景图重命名为: background.jpg
+// 人物图重命名为: character.png
+const backgroundImage = ref('/background.jpg')
+const characterImage = ref('/character.png')
 
 const remainingPoints = computed(() => {
   if (!userStore.nextLevelPoints) return 0
