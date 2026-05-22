@@ -2,7 +2,7 @@
   <div class="min-h-screen relative overflow-hidden">
     <!-- 校园背景图 -->
     <img 
-      src="https://neeko-copilot.bytedance.net/api/text_to_image?prompt=cartoon%20school%20campus%20scene%20building%20with%20red%20flag%20blue%20sky%20white%20clouds%20green%20lawn%20fountain%20benches%20trees%20sunny%20day%20animated%20style%20天天学苑&image_size=portrait_16_9" 
+      src="https://space.coze.cn/s/v184gHtW5Qc/" 
       alt="校园背景" 
       class="absolute inset-0 w-full h-full object-cover"
     />
@@ -64,7 +64,7 @@
           <div class="relative mb-4">
             <!-- 人物形象图 -->
             <img 
-              src="https://neeko-copilot.bytedance.net/api/text_to_image?prompt=cute%20cartoon%20boy%20character%20brown%20hair%20big%20round%20eyes%20blue%20white%20long%20sleeve%20shirt%20black%20shorts%20yellow%20shoes%20standing%20full%20body%20transparent%20background%20kawaii%20style&image_size=square" 
+              src="https://space.coze.cn/s/v1vGd-2g2Og/" 
               alt="人物形象" 
               class="w-40 h-48 object-contain drop-shadow-2xl"
             />
