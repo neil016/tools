@@ -1,9 +1,11 @@
 <template>
-  <div class="min-h-screen relative overflow-hidden" style="background: linear-gradient(180deg, #4A6CF7 0%, #6B4CE8 50%, #8B5CF6 100%);">
-    <div class="absolute inset-0 opacity-20">
-      <div class="absolute top-10 left-10 w-32 h-32 bg-white rounded-full blur-3xl"></div>
-      <div class="absolute bottom-20 right-10 w-40 h-40 bg-yellow-300 rounded-full blur-3xl"></div>
-      <div class="absolute top-1/2 left-1/4 w-24 h-24 bg-pink-300 rounded-full blur-2xl"></div>
+  <div class="min-h-screen relative overflow-hidden" style="background: linear-gradient(180deg, #87CEEB 0%, #98D8C8 40%, #F7DC6F 100%);">
+    <div class="absolute inset-0 overflow-hidden pointer-events-none">
+      <div class="absolute top-10 left-20 w-16 h-16 bg-white rounded-full opacity-60 blur-sm"></div>
+      <div class="absolute top-8 right-32 w-24 h-24 bg-white rounded-full opacity-50 blur-sm"></div>
+      <div class="absolute top-20 left-1/3 w-12 h-12 bg-white rounded-full opacity-40 blur-sm"></div>
+      <div class="absolute bottom-20 left-1/4 w-32 h-32 bg-green-200 rounded-full opacity-30 blur-xl"></div>
+      <div class="absolute bottom-10 right-1/4 w-24 h-24 bg-green-300 rounded-full opacity-25 blur-xl"></div>
     </div>
 
     <div class="relative z-10 p-4">
@@ -57,10 +59,9 @@
 
         <div class="flex-1 flex flex-col items-center justify-end pb-4">
           <div class="relative mb-4">
-            <div class="w-36 h-44 rounded-full bg-gradient-to-br from-blue-300 to-blue-500 flex items-center justify-center border-4 border-white shadow-xl">
-              <div class="text-center">
-                <div class="text-6xl mb-1">🧑‍🎓</div>
-              </div>
+            <div class="w-36 h-44 bg-gradient-to-b from-white/80 to-white/90 rounded-3xl flex flex-col items-center justify-center border-4 border-white shadow-xl">
+              <div class="text-6xl mb-2">🧑‍🎓</div>
+              <div class="text-xs text-gray-500 mt-2">天天学苑</div>
             </div>
             <div class="absolute -bottom-2 left-1/2 -translate-x-1/2 px-4 py-1.5 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full shadow-lg">
               <span class="text-white text-xs font-bold">{{ userStore.levelName }}</span>
