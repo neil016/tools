@@ -21,7 +21,7 @@ export const useUserStore = defineStore('user', () => {
   const gender = ref(0)
   const currentPoints = ref(0)
   const totalPoints = ref(0)
-  const lives = ref(3)
+  const lives = ref(5)
   const lastSignIn = ref('')
   const signInDays = ref(0)
   const level = ref(1)
