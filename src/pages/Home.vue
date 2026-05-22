@@ -1,169 +1,121 @@
 <template>
-  <div class="min-h-screen relative overflow-hidden bg-gradient-to-b from-sky-400 via-sky-300 to-green-400">
-    <div class="absolute inset-0">
-      <div class="absolute top-10 left-10 w-16 h-16 bg-white/40 rounded-full blur-xl"></div>
-      <div class="absolute top-20 right-20 w-24 h-24 bg-white/30 rounded-full blur-xl"></div>
-      <div class="absolute top-1/3 left-1/4 w-20 h-20 bg-white/30 rounded-full blur-xl"></div>
+  <div class="min-h-screen relative overflow-hidden" style="background: linear-gradient(180deg, #4A6CF7 0%, #6B4CE8 50%, #8B5CF6 100%);">
+    <div class="absolute inset-0 opacity-20">
+      <div class="absolute top-10 left-10 w-32 h-32 bg-white rounded-full blur-3xl"></div>
+      <div class="absolute bottom-20 right-10 w-40 h-40 bg-yellow-300 rounded-full blur-3xl"></div>
+      <div class="absolute top-1/2 left-1/4 w-24 h-24 bg-pink-300 rounded-full blur-2xl"></div>
     </div>
 
-    <div class="absolute top-0 left-0 right-0 h-48 overflow-hidden">
-      <svg viewBox="0 0 400 200" class="w-full h-full">
-        <rect x="0" y="80" width="400" height="120" fill="#86EFAC" opacity="0.8"/>
-        <rect x="30" y="20" width="60" height="80" fill="#D4D4D4"/>
-        <rect x="100" y="30" width="50" height="70" fill="#E5E5E5"/>
-        <rect x="155" y="10" width="90" height="90" fill="#FDE68A"/>
-        <rect x="165" y="20" width="70" height="50" fill="#FED7AA"/>
-        <polygon points="155,20 200,0 245,20" fill="#DC2626"/>
-        <circle cx="200" cy="35" r="15" fill="white" stroke="#9CA3AF" stroke-width="2"/>
-        <line x1="200" y1="30" x2="200" y2="40" stroke="#374151" stroke-width="1"/>
-        <line x1="193" y1="35" x2="207" y2="35" stroke="#374151" stroke-width="1"/>
-        <rect x="250" y="25" width="45" height="75" fill="#FCA5A5"/>
-        <rect x="300" y="35" width="50" height="65" fill="#D4D4D4"/>
-        <rect x="355" y="40" width="40" height="60" fill="#E5E5E5"/>
-        <rect x="10" y="80" width="80" height="4" fill="white"/>
-        <rect x="100" y="80" width="80" height="4" fill="white"/>
-        <rect x="190" y="80" width="100" height="4" fill="white"/>
-        <rect x="300" y="80" width="80" height="4" fill="white"/>
-        <rect x="0" y="84" width="10" height="40" fill="white"/>
-        <rect x="20" y="84" width="10" height="40" fill="white"/>
-        <rect x="40" y="84" width="10" height="40" fill="white"/>
-        <rect x="60" y="84" width="10" height="40" fill="white"/>
-        <rect x="330" y="84" width="10" height="40" fill="white"/>
-        <rect x="350" y="84" width="10" height="40" fill="white"/>
-        <rect x="370" y="84" width="10" height="40" fill="white"/>
-        <rect x="390" y="84" width="10" height="40" fill="white"/>
-        <circle cx="50" cy="100" r="20" fill="#4ADE80"/>
-        <circle cx="60" cy="85" r="15" fill="#22C55E"/>
-        <circle cx="40" cy="90" r="12" fill="#22C55E"/>
-        <circle cx="130" cy="95" r="18" fill="#4ADE80"/>
-        <circle cx="140" cy="82" r="14" fill="#22C55E"/>
-        <circle cx="920" cy="90" r="16" fill="#4ADE80"/>
-        <circle cx="930" cy="80" r="12" fill="#22C55E"/>
-        <circle cx="340" cy="95" r="17" fill="#4ADE80"/>
-        <circle cx="350" cy="83" r="13" fill="#22C55E"/>
-        <circle cx="230" cy="105" r="8" fill="white"/>
-        <circle cx="320" cy="100" r="10" fill="white"/>
-        <circle cx="380" cy="95" r="8" fill="white"/>
-      </svg>
-    </div>
-
-    <div class="absolute top-4 left-4 z-20">
-      <div class="flex items-center gap-2 bg-white/90 backdrop-blur-sm rounded-full px-3 py-2 shadow-lg">
-        <div class="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center">
-          <span class="text-gray-500 text-lg">👤</span>
+    <div class="relative z-10 p-4">
+      <div class="flex items-center justify-between mb-6">
+        <div class="flex items-center gap-3">
+          <div class="w-14 h-14 rounded-full bg-gradient-to-r from-yellow-400 to-orange-500 flex items-center justify-center border-3 border-white shadow-lg">
+            <span class="text-white text-xl font-bold">{{ userStore.nickname.charAt(0) }}</span>
+          </div>
+          <div class="flex items-center gap-2">
+            <span class="text-lg font-bold text-white">{{ userStore.nickname }}</span>
+            <span class="text-xl">{{ userStore.gender === 1 ? '👨' : userStore.gender === 2 ? '👩' : '👤' }}</span>
+          </div>
         </div>
-        <div class="flex items-center gap-1">
-          <span class="text-red-500 text-xl">🌺</span>
-          <span class="font-bold text-gray-700">{{ userStore.currentPoints }}</span>
+
+        <div class="flex items-center gap-4">
+          <div class="flex items-center gap-1 bg-white/20 px-3 py-1.5 rounded-full">
+            <span class="text-xl">💎</span>
+            <span class="text-white font-bold">{{ userStore.currentPoints }}</span>
+          </div>
+          <div class="flex items-center gap-1 bg-white/20 px-3 py-1.5 rounded-full">
+            <span class="text-xl">❤️</span>
+            <span class="text-white font-bold">{{ userStore.lives }}/5</span>
+          </div>
         </div>
       </div>
-    </div>
 
-    <div class="absolute top-4 right-4 z-20">
-      <button class="flex flex-col items-center gap-1 bg-white/90 backdrop-blur-sm rounded-full p-3 shadow-lg hover:shadow-xl transition-all">
-        <span class="text-2xl">🔔</span>
-        <span class="text-xs text-gray-600">戳一戳</span>
-      </button>
-    </div>
-
-    <div class="relative z-10 pt-56 pb-8 px-4">
-      <div class="absolute left-2 top-48">
-        <div class="flex flex-col gap-3">
+      <div class="flex justify-between">
+        <div class="flex flex-col gap-3 w-24">
           <button 
             @click="handleSignIn" 
-            class="w-16 h-16 bg-gradient-to-br from-orange-400 to-red-500 rounded-full flex flex-col items-center justify-center shadow-lg hover:shadow-xl transition-all hover:-translate-y-1 relative"
+            class="flex flex-col items-center gap-2 p-4 bg-white/90 backdrop-blur-sm rounded-2xl shadow-lg hover:shadow-xl transition-all hover:-translate-y-1"
           >
-            <span class="text-xl">🌺</span>
-            <span class="absolute -top-1 -right-1 w-5 h-5 bg-yellow-400 rounded-full flex items-center justify-center text-xs font-bold text-red-600">奖</span>
+            <span class="text-3xl">📅</span>
+            <span class="text-xs font-bold text-gray-700">每日签到</span>
           </button>
-          <span class="text-xs text-white font-bold text-center drop-shadow">领红花</span>
+          <button 
+            @click="$router.push('/shop')" 
+            class="flex flex-col items-center gap-2 p-4 bg-white/90 backdrop-blur-sm rounded-2xl shadow-lg hover:shadow-xl transition-all hover:-translate-y-1"
+          >
+            <span class="text-3xl">🛒</span>
+            <span class="text-xs font-bold text-gray-700">积分商城</span>
+          </button>
+          <button 
+            @click="handleLottery" 
+            class="flex flex-col items-center gap-2 p-4 bg-white/90 backdrop-blur-sm rounded-2xl shadow-lg hover:shadow-xl transition-all hover:-translate-y-1"
+          >
+            <span class="text-3xl">🎰</span>
+            <span class="text-xs font-bold text-gray-700">积分抽奖</span>
+          </button>
         </div>
-      </div>
 
-      <div class="flex flex-col items-center">
-        <div class="relative mb-4">
-          <div class="text-8xl animate-bounce">👦</div>
-          <div class="absolute -right-4 top-4 bg-gradient-to-r from-yellow-400 to-orange-400 px-3 py-1 rounded-lg shadow-lg">
-            <span class="text-xs font-bold text-white">专属称号</span>
+        <div class="flex-1 flex flex-col items-center justify-end pb-4">
+          <div class="relative mb-4">
+            <div class="w-32 h-32 rounded-full bg-gradient-to-br from-yellow-300 to-orange-400 flex items-center justify-center border-4 border-white shadow-xl">
+              <span class="text-5xl">🧙</span>
+            </div>
+            <div class="absolute -bottom-2 left-1/2 -translate-x-1/2 px-3 py-1 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full">
+              <span class="text-white text-xs font-bold">{{ userStore.levelName }}</span>
+            </div>
           </div>
-          <div class="absolute -right-4 top-12 bg-white/90 backdrop-blur-sm px-3 py-2 rounded-lg shadow-lg">
-            <span class="text-sm font-bold text-gray-700">{{ userStore.levelName }}</span>
-          </div>
-        </div>
 
-        <div class="bg-white/95 backdrop-blur-sm rounded-full px-6 py-3 shadow-xl mb-4">
-          <div class="flex items-center gap-4">
-            <div class="w-32 h-4 bg-gray-200 rounded-full overflow-hidden">
+          <div class="w-full max-w-xs bg-white/90 backdrop-blur-sm rounded-2xl p-4 shadow-lg">
+            <div class="flex justify-between text-sm mb-2">
+              <span class="text-gray-600">升级进度</span>
+              <span class="text-gray-500">还差 {{ remainingPoints }} 分升级</span>
+            </div>
+            <div class="h-3 bg-gray-200 rounded-full overflow-hidden">
               <div 
-                class="h-full bg-gradient-to-r from-yellow-400 to-orange-400 transition-all duration-500"
+                class="h-full bg-gradient-to-r from-green-400 to-emerald-500 transition-all duration-500"
                 :style="{ width: userStore.levelProgress + '%' }"
               ></div>
             </div>
-            <div class="flex items-center gap-1">
-              <span class="text-yellow-500">⭐</span>
-              <span class="text-sm font-bold text-gray-700">×{{ levelStars }}</span>
+            <div class="flex justify-between text-xs text-gray-400 mt-1">
+              <span>Lv.{{ userStore.level }}</span>
+              <span>Lv.{{ userStore.level + 1 }}</span>
             </div>
           </div>
-          <div class="text-center text-sm text-gray-500 mt-1">
-            再赢{{ remainingWins }}局即可升级
-          </div>
         </div>
 
+        <div class="flex flex-col gap-3 w-24">
+          <button 
+            @click="startQuiz('daily')" 
+            class="flex flex-col items-center gap-2 p-4 bg-white/90 backdrop-blur-sm rounded-2xl shadow-lg hover:shadow-xl transition-all hover:-translate-y-1"
+          >
+            <span class="text-3xl">🎯</span>
+            <span class="text-xs font-bold text-gray-700">每日挑战</span>
+          </button>
+          <button 
+            @click="startQuiz('level')" 
+            class="flex flex-col items-center gap-2 p-4 bg-white/90 backdrop-blur-sm rounded-2xl shadow-lg hover:shadow-xl transition-all hover:-translate-y-1"
+          >
+            <span class="text-3xl">🏰</span>
+            <span class="text-xs font-bold text-gray-700">个人闯关</span>
+          </button>
+          <button 
+            @click="startQuiz('pk')" 
+            class="flex flex-col items-center gap-2 p-4 bg-gradient-to-br from-red-400 to-pink-500 rounded-2xl shadow-lg hover:shadow-xl transition-all hover:-translate-y-1"
+          >
+            <span class="text-3xl">⚔️</span>
+            <span class="text-xs font-bold text-white">PK对战</span>
+          </button>
+        </div>
+      </div>
+
+      <div class="mt-6 flex justify-center">
         <button 
-          @click="startQuiz('daily')" 
-          class="w-64 h-16 bg-gradient-to-r from-red-500 to-orange-500 rounded-full shadow-xl text-white text-xl font-bold hover:shadow-2xl transition-all hover:scale-105 flex items-center justify-center"
+          @click="$router.push('/profile')" 
+          class="flex items-center gap-2 px-6 py-3 bg-white/80 backdrop-blur-sm rounded-full shadow-lg hover:shadow-xl transition-all"
         >
-          开始游戏
+          <span class="text-lg">👤</span>
+          <span class="text-gray-700 font-medium">个人中心</span>
         </button>
-      </div>
-
-      <div class="absolute right-2 top-48">
-        <div class="flex flex-col gap-3">
-          <button 
-            @click="handleLottery" 
-            class="w-16 h-16 bg-gradient-to-br from-yellow-400 to-orange-500 rounded-full flex flex-col items-center justify-center shadow-lg hover:shadow-xl transition-all hover:-translate-y-1 relative"
-          >
-            <span class="text-xl">🎰</span>
-          </button>
-          <span class="text-xs text-white font-bold text-center drop-shadow">立即抽奖</span>
-        </div>
-      </div>
-
-      <div class="absolute left-2 bottom-24">
-        <div class="flex flex-col gap-3">
-          <button 
-            @click="$router.push('/shop')" 
-            class="w-16 h-16 bg-gradient-to-br from-blue-400 to-cyan-500 rounded-full flex flex-col items-center justify-center shadow-lg hover:shadow-xl transition-all hover:-translate-y-1 relative"
-          >
-            <span class="text-xl">🏪</span>
-            <span class="absolute -top-1 -right-1 w-5 h-5 bg-green-400 rounded-full flex items-center justify-center text-xs font-bold text-white">新</span>
-          </button>
-          <span class="text-xs text-white font-bold text-center drop-shadow">小卖部</span>
-        </div>
-      </div>
-
-      <div class="absolute right-2 bottom-24">
-        <div class="flex flex-col gap-3">
-          <button 
-            @click="showLeaderboard" 
-            class="w-16 h-16 bg-gradient-to-br from-amber-400 to-yellow-500 rounded-full flex flex-col items-center justify-center shadow-lg hover:shadow-xl transition-all hover:-translate-y-1"
-          >
-            <span class="text-xl">🏆</span>
-          </button>
-          <span class="text-xs text-white font-bold text-center drop-shadow">排行榜</span>
-        </div>
-      </div>
-
-      <div class="absolute left-2 bottom-6">
-        <div class="flex flex-col gap-3">
-          <button 
-            @click="showContact" 
-            class="w-16 h-16 bg-gradient-to-br from-amber-600 to-amber-700 rounded-full flex flex-col items-center justify-center shadow-lg hover:shadow-xl transition-all hover:-translate-y-1"
-          >
-            <span class="text-xl">💬</span>
-          </button>
-          <span class="text-xs text-white font-bold text-center drop-shadow">联系客服</span>
-        </div>
       </div>
     </div>
 
@@ -219,12 +171,9 @@ const showLotteryModal = ref(false)
 const showLotteryResult = ref(false)
 const lotteryPrize = ref({ icon: '', name: '', count: 0 })
 
-const levelStars = computed(() => userStore.level)
-
-const remainingWins = computed(() => {
+const remainingPoints = computed(() => {
   if (!userStore.nextLevelPoints) return 0
-  const pointsNeeded = userStore.nextLevelPoints - userStore.totalPoints
-  return Math.ceil(pointsNeeded / 10)
+  return userStore.nextLevelPoints - userStore.totalPoints
 })
 
 onMounted(() => {
@@ -292,14 +241,6 @@ function startQuiz(mode) {
   userStore.saveUser()
   window.location.href = '/quiz'
 }
-
-function showLeaderboard() {
-  alert('排行榜功能开发中...')
-}
-
-function showContact() {
-  alert('客服功能开发中...')
-}
 </script>
 
 <style>
@@ -311,14 +252,5 @@ function showContact() {
 
 .animate-bounce-in {
   animation: bounce-in 0.3s ease-out;
-}
-
-@keyframes float {
-  0%, 100% { transform: translateY(0px); }
-  50% { transform: translateY(-10px); }
-}
-
-.animate-float {
-  animation: float 3s ease-in-out infinite;
 }
 </style>
