@@ -4,6 +4,7 @@ import { OrbitControls, Stars, Text } from '@react-three/drei';
 import * as THREE from 'three';
 import { useMapStore, MapLevel } from '../store/useMapStore';
 import { getRegionsByLevel, generateStats } from '../utils/mockData';
+import { chinaProvincesGeoJSON } from '../data/chinaProvinces';
 
 const provinceColors = [
   '#00d4ff', '#00bcd4', '#a855f7', '#06b6d4', '#0ea5e9',
@@ -165,39 +166,15 @@ const GeoJSONRegion = ({
 const MapScene = () => {
   const { currentLevel, setCurrentLevel, setStats, setRegions } = useMapStore();
   const [hoveredFeature, setHoveredFeature] = useState<any>(null);
-  const [mapData, setMapData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
 
-  const getMapDataUrl = useCallback((code: string) => {
-    return `https://geo.datav.aliyun.com/areas_v3/bound/${code}_full.json`;
-  }, []);
-
   useEffect(() => {
-    const fetchData = async () => {
-      setLoading(true);
-      try {
-        console.log('正在加载地图数据:', currentLevel.currentCode);
-        const response = await fetch(getMapDataUrl(currentLevel.currentCode));
-        if (response.ok) {
-          const data = await response.json();
-          console.log('地图数据加载成功:', data);
-          setMapData(data);
-          const regions = getRegionsByLevel(currentLevel.level, currentLevel.currentCode);
-          setRegions(regions);
-          setStats(generateStats(regions));
-        } else {
-          throw new Error(`HTTP ${response.status}`);
-        }
-      } catch (error) {
-        console.error('加载地图数据失败:', error);
-        setMapData(null);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchData();
-  }, [currentLevel, setRegions, setStats, getMapDataUrl]);
+    console.log('Initializing map data for level:', currentLevel.level);
+    const regions = getRegionsByLevel(currentLevel.level, currentLevel.currentCode);
+    setRegions(regions);
+    setStats(generateStats(regions));
+    setLoading(false);
+  }, [currentLevel, setRegions, setStats]);
 
   const handleRegionClick = useCallback((feature: any) => {
     const nextLevelMap: Record<string, MapLevel['level']> = {
@@ -233,18 +210,7 @@ const MapScene = () => {
     );
   }
 
-  if (!mapData) {
-    return (
-      <>
-        <ambientLight intensity={0.5} />
-        <pointLight position={[10, 10, 10]} color="#00d4ff" intensity={1.5} />
-        <Stars radius={100} depth={50} count={5000} factor={4} saturation={0} fade speed={1} />
-        <Text position={[0, 0, 0]} fontSize={0.8} color="#f97316" anchorX="center" anchorY="middle">
-          地图数据加载失败
-        </Text>
-      </>
-    );
-  }
+  const mapData = chinaProvincesGeoJSON;
 
   return (
     <>
