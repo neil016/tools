@@ -1,5 +1,5 @@
 import React from 'react';
-import { ChinaMap3D } from './components/ChinaMap3D';
+import { RealChinaMap3D } from './components/RealChinaMap3D';
 import { StatsPanel } from './components/StatsPanel';
 import { ControlPanel } from './components/ControlPanel';
 
@@ -18,7 +18,7 @@ function App() {
       
       {/* 3D地图 */}
       <div className="absolute inset-0">
-        <ChinaMap3D />
+        <RealChinaMap3D />
       </div>
       
       {/* 数据面板 */}
@@ -35,7 +35,7 @@ function App() {
       <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 z-20">
         <div className="glass-panel glow-border rounded px-6 py-2">
           <p className="text-cyber-blue text-sm">
-            支持拖拽、缩放 | 点击区域下钻 | 数据实时更新
+            支持拖拽、缩放 | 点击区域下钻 | 真实地图边界
           </p>
         </div>
       </div>
