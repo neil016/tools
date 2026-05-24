@@ -1,4 +1,4 @@
-import React, { useRef, useState, useEffect, Suspense } from 'react';
+import React, { useRef, useState, useEffect, Suspense, useMemo, useCallback } from 'react';
 import { Canvas, useFrame } from '@react-three/fiber';
 import { OrbitControls, Stars, Text } from '@react-three/drei';
 import * as THREE from 'three';
@@ -6,7 +6,7 @@ import { useMapStore, MapLevel } from '../store/useMapStore';
 import { getRegionsByLevel, generateStats } from '../utils/mockData';
 
 const provinceColors = [
-  '#00d4ff', '#00bcd4', '#a855f7', '#06b6d4', '#0ea5e9', 
+  '#00d4ff', '#00bcd4', '#a855f7', '#06b6d4', '#0ea5e9',
   '#3b82f6', '#6366f1', '#8b5cf6', '#a855f7', '#d946ef',
   '#ec4899', '#f43f5e', '#ef4444', '#f97316', '#f59e0b',
   '#eab308', '#84cc16', '#22c55e', '#10b981', '#14b8a6',
@@ -15,79 +15,148 @@ const provinceColors = [
   '#c2410c', '#a16207', '#713f12', '#451a03'
 ];
 
-const SimpleRegion = ({
-  region,
+const geoTo3D = (lng: number, lat: number, level: string = 'country'): [number, number, number] => {
+  const centerLng = 105.0;
+  const centerLat = 36.0;
+  const scales: Record<string, number> = {
+    country: 0.18,
+    province: 0.5,
+    city: 1.5,
+    county: 4
+  };
+  const scale = scales[level] || 0.18;
+  const x = (lng - centerLng) * scale;
+  const y = (lat - centerLat) * scale;
+  return [x, y, 0];
+};
+
+const calculateCenter = (coordinates: any, level: string): [number, number] => {
+  let sumLng = 0;
+  let sumLat = 0;
+  let count = 0;
+  const flattenCoords = (coords: any) => {
+    if (Array.isArray(coords[0][0])) {
+      coords.forEach((c: any) => flattenCoords(c));
+    } else if (Array.isArray(coords[0])) {
+      coords[0].forEach(([lng, lat]: [number, number]) => {
+        sumLng += lng;
+        sumLat += lat;
+        count++;
+      });
+    }
+  };
+  flattenCoords(coordinates);
+  return count > 0 ? geoTo3D(sumLng / count, sumLat / count, level) : [0, 0];
+};
+
+const GeoJSONRegion = ({
+  feature,
   index,
   onClick,
-  onHover
+  onHover,
+  level
 }: {
-  region: any;
+  feature: any;
   index: number;
-  onClick: (region: any) => void;
-  onHover: (region: any) => void;
+  onClick: (feature: any) => void;
+  onHover: (feature: any) => void;
+  level: string;
 }) => {
-  const meshRef = useRef<THREE.Mesh>(null);
+  const groupRef = useRef<THREE.Group>(null);
   const [isHovered, setIsHovered] = useState(false);
-  const [scale, setScale] = useState(1);
   const [height, setHeight] = useState(0.3);
+  
+  const geometries = useMemo(() => {
+    const result: THREE.BufferGeometry[] = [];
+    const { coordinates, type } = feature.geometry;
 
-  const total = 34;
-  const cols = 6;
-  const rows = Math.ceil(total / cols);
-  const col = index % cols;
-  const row = Math.floor(index / cols);
-  const x = (col - cols / 2) * 1.5;
-  const y = (row - rows / 2) * -1.2;
+    const processRing = (ring: any) => {
+      const shape = new THREE.Shape();
+      ring.forEach((coord: [number, number], i: number) => {
+        const [x, y] = geoTo3D(coord[0], coord[1], level);
+        if (i === 0) {
+          shape.moveTo(x, y);
+        } else {
+          shape.lineTo(x, y);
+        }
+      });
+
+      const extrudeSettings = {
+        steps: 1,
+        depth: 0.3,
+        bevelEnabled: false
+      };
+
+      const geometry = new THREE.ExtrudeGeometry(shape, extrudeSettings);
+      geometry.center();
+      result.push(geometry);
+    };
+
+    if (type === 'Polygon') {
+      processRing(coordinates[0]);
+    } else if (type === 'MultiPolygon') {
+      coordinates.forEach((poly: any) => {
+        if (Array.isArray(poly[0][0])) {
+          processRing(poly[0]);
+        } else if (Array.isArray(poly[0])) {
+          processRing(poly);
+        }
+      });
+    }
+
+    return result;
+  }, [feature, level]);
+
+  const center = useMemo(() => {
+    return calculateCenter(feature.geometry.coordinates, level);
+  }, [feature, level]);
 
   useFrame((_, delta) => {
-    if (meshRef.current) {
-      const targetScale = isHovered ? 1.1 : 1;
-      const targetHeight = isHovered ? 0.5 : 0.3;
-      setScale(prev => THREE.MathUtils.lerp(prev, targetScale, delta * 5));
-      setHeight(prev => THREE.MathUtils.lerp(prev, targetHeight, delta * 5));
-      meshRef.current.scale.set(scale, scale, 1);
-    }
+    const targetHeight = isHovered ? 0.5 : 0.3;
+    setHeight(prev => THREE.MathUtils.lerp(prev, targetHeight, delta * 5));
   });
 
   const color = provinceColors[index % provinceColors.length];
 
   return (
-    <group position={[x, y, height / 2]}>
-      <mesh
-        ref={meshRef}
-        onPointerOver={() => {
-          setIsHovered(true);
-          onHover(region);
-        }}
-        onPointerOut={() => {
-          setIsHovered(false);
-          onHover(null);
-        }}
-        onClick={(e) => {
-          e.stopPropagation();
-          onClick(region);
-        }}
-      >
-        <boxGeometry args={[1.2, 0.8, 0.3]} />
-        <meshStandardMaterial
-          color={color}
-          emissive={color}
-          emissiveIntensity={isHovered ? 0.6 : 0.2}
-          roughness={0.4}
-          metalness={0.2}
-          transparent
-          opacity={0.9}
-        />
-      </mesh>
+    <group ref={groupRef} position={[center[0], center[1], height / 2]}>
+      {geometries.map((geometry, i) => (
+        <mesh
+          key={i}
+          onPointerOver={() => {
+            setIsHovered(true);
+            onHover(feature);
+          }}
+          onPointerOut={() => {
+            setIsHovered(false);
+            onHover(null);
+          }}
+          onClick={(e) => {
+            e.stopPropagation();
+            onClick(feature);
+          }}
+          geometry={geometry}
+        >
+          <meshStandardMaterial
+            color={color}
+            emissive={color}
+            emissiveIntensity={isHovered ? 0.6 : 0.15}
+            roughness={0.4}
+            metalness={0.2}
+            transparent
+            opacity={0.9}
+          />
+        </mesh>
+      ))}
       
       <Text
-        position={[0, 0, 0.4]}
-        fontSize={0.18}
+        position={[0, 0, 0.6]}
+        fontSize={level === 'country' ? 0.3 : level === 'province' ? 0.2 : 0.15}
         color="#ffffff"
         anchorX="center"
         anchorY="middle"
       >
-        {region.name}
+        {feature.properties?.name || ''}
       </Text>
     </group>
   );
@@ -96,31 +165,52 @@ const SimpleRegion = ({
 const MapScene = () => {
   const { currentLevel, setCurrentLevel, setStats, setRegions } = useMapStore();
   const [hoveredFeature, setHoveredFeature] = useState<any>(null);
-  const [loadingState, setLoadingState] = useState<'loading' | 'ready' | 'error'>('loading');
+  const [mapData, setMapData] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
+
+  const getMapDataUrl = useCallback((code: string) => {
+    return `https://geo.datav.aliyun.com/areas_v3/bound/${code}_full.json`;
+  }, []);
 
   useEffect(() => {
-    console.log('Initializing map data for level:', currentLevel.level);
-    const regions = getRegionsByLevel(currentLevel.level, currentLevel.currentCode);
-    console.log('Regions loaded:', regions);
-    setRegions(regions);
-    setStats(generateStats(regions));
-    setLoadingState('ready');
-  }, [currentLevel, setRegions, setStats]);
+    const fetchData = async () => {
+      setLoading(true);
+      try {
+        console.log('正在加载地图数据:', currentLevel.currentCode);
+        const response = await fetch(getMapDataUrl(currentLevel.currentCode));
+        if (response.ok) {
+          const data = await response.json();
+          console.log('地图数据加载成功:', data);
+          setMapData(data);
+          const regions = getRegionsByLevel(currentLevel.level, currentLevel.currentCode);
+          setRegions(regions);
+          setStats(generateStats(regions));
+        } else {
+          throw new Error(`HTTP ${response.status}`);
+        }
+      } catch (error) {
+        console.error('加载地图数据失败:', error);
+        setMapData(null);
+      } finally {
+        setLoading(false);
+      }
+    };
 
-  const handleRegionClick = (region: any) => {
-    console.log('Region clicked:', region);
+    fetchData();
+  }, [currentLevel, setRegions, setStats, getMapDataUrl]);
+
+  const handleRegionClick = useCallback((feature: any) => {
     const nextLevelMap: Record<string, MapLevel['level']> = {
       country: 'province',
       province: 'city',
       city: 'county'
     };
     
-    const adcode = region.adcode || String(110000 + Math.floor(Math.random() * 1000));
-    const name = region.name;
-    
+    const adcode = feature.properties?.adcode;
+    const name = feature.properties?.name;
     const nextLevel = nextLevelMap[currentLevel.level];
-    if (nextLevel) {
-      console.log('Drilling down to:', nextLevel, name, adcode);
+    
+    if (nextLevel && adcode) {
       setCurrentLevel({
         level: nextLevel,
         currentCode: adcode,
@@ -128,18 +218,29 @@ const MapScene = () => {
         parentCode: currentLevel.currentCode
       });
     }
-  };
+  }, [currentLevel, setCurrentLevel]);
 
-  const regions = getRegionsByLevel(currentLevel.level, currentLevel.currentCode);
-
-  if (loadingState === 'loading') {
+  if (loading) {
     return (
       <>
         <ambientLight intensity={0.5} />
         <pointLight position={[10, 10, 10]} color="#00d4ff" intensity={1.5} />
         <Stars radius={100} depth={50} count={5000} factor={4} saturation={0} fade speed={1} />
         <Text position={[0, 0, 0]} fontSize={1} color="#00d4ff" anchorX="center" anchorY="middle">
-          加载中...
+          正在加载地图数据...
+        </Text>
+      </>
+    );
+  }
+
+  if (!mapData) {
+    return (
+      <>
+        <ambientLight intensity={0.5} />
+        <pointLight position={[10, 10, 10]} color="#00d4ff" intensity={1.5} />
+        <Stars radius={100} depth={50} count={5000} factor={4} saturation={0} fade speed={1} />
+        <Text position={[0, 0, 0]} fontSize={0.8} color="#f97316" anchorX="center" anchorY="middle">
+          地图数据加载失败
         </Text>
       </>
     );
@@ -153,37 +254,27 @@ const MapScene = () => {
       <pointLight position={[0, 10, -10]} color="#06b6d4" intensity={1} />
       
       <Stars radius={100} depth={50} count={5000} factor={4} saturation={0} fade speed={1} />
-      
       <gridHelper args={[30, 30, 0x00d4ff, 0x1e3a5f]} position={[0, 0, -0.1]} />
       
-      {regions.map((region: any, index: number) => (
-        <SimpleRegion
-          key={region.adcode || index}
-          region={region}
+      {mapData.features && mapData.features.map((feature: any, index: number) => (
+        <GeoJSONRegion
+          key={feature.properties?.adcode || index}
+          feature={feature}
           index={index}
           onClick={handleRegionClick}
           onHover={setHoveredFeature}
+          level={currentLevel.level}
         />
       ))}
       
       {hoveredFeature && (
-        <mesh position={[0, -8, 0]}>
-          <planeGeometry args={[6, 1]} />
-          <meshBasicMaterial color="#0a0f1c" transparent opacity={0.8} />
-          <Text
-            position={[0, 0, 0.1]}
-            fontSize={0.4}
-            color="#00d4ff"
-            anchorX="center"
-            anchorY="middle"
-          >
-            {hoveredFeature.name}
-          </Text>
-        </mesh>
+        <Text position={[0, -8, 0]} fontSize={0.4} color="#00d4ff" anchorX="center" anchorY="middle">
+          {hoveredFeature.properties?.name || ''}
+        </Text>
       )}
       
       <Text position={[0, 8, 0]} fontSize={0.4} color="#00d4ff" anchorX="center" anchorY="middle">
-        当前级别：{currentLevel.name}
+        当前级别: {currentLevel.name}
       </Text>
     </>
   );
@@ -192,8 +283,8 @@ const MapScene = () => {
 export const RealChinaMap3D = () => {
   return (
     <div className="w-full h-full">
-      <Canvas 
-        camera={{ position: [0, 0, 20], fov: 60 }}
+      <Canvas
+        camera={{ position: [0, 0, 25], fov: 60 }}
         dpr={[1, 2]}
       >
         <Suspense fallback={
@@ -210,7 +301,7 @@ export const RealChinaMap3D = () => {
           enableDamping
           dampingFactor={0.05}
           minDistance={5}
-          maxDistance={40}
+          maxDistance={60}
           enablePan={true}
         />
       </Canvas>
