@@ -1,9 +1,10 @@
-import React, { useMemo, useRef, useState, useEffect, Suspense } from 'react';
+import React, { useMemo, useRef, useState, useEffect, Suspense, useCallback } from 'react';
 import { Canvas, useFrame } from '@react-three/fiber';
 import { OrbitControls, Stars, Text } from '@react-three/drei';
 import * as THREE from 'three';
 import { useMapStore, MapLevel } from '../store/useMapStore';
 import { getRegionsByLevel, generateStats } from '../utils/mockData';
+import { chinaGeoJSON } from '../data/chinaMapData';
 
 // 阿里云DataV地图API地址
 const getMapDataUrl = (adcode: string) => 
@@ -81,7 +82,7 @@ const Region3D = ({
   feature: any; 
   index: number;
   onClick: (feature: any) => void;
-  onHover: (feature: any | null) => void;
+  onHover: (feature: any) => void;
   level: string;
 }) => {
   const meshRef = useRef<THREE.Mesh>(null);
@@ -91,46 +92,56 @@ const Region3D = ({
 
   const { geometries, center } = useMemo(() => {
     const geometries: THREE.BufferGeometry[] = [];
-    const { coordinates } = feature.geometry;
     
-    // 处理Polygon或MultiPolygon
-    const processPolygon = (polyCoords: any) => {
-      const shape = new THREE.Shape();
+    try {
+      const { coordinates } = feature.geometry;
       
-      // 只处理外环（第一个环）
-      const ringCoords = Array.isArray(polyCoords[0][0]) ? polyCoords[0] : polyCoords;
-      
-      if (ringCoords && ringCoords.length > 0) {
-        ringCoords.forEach((coord: [number, number], i: number) => {
-          const [x, y] = geoTo3D(coord[0], coord[1], level);
-          if (i === 0) {
-            shape.moveTo(x, y);
-          } else {
-            shape.lineTo(x, y);
-          }
-        });
-      }
-      
-      const extrudeSettings = {
-        steps: 1,
-        depth: 0.3,
-        bevelEnabled: false
+      // 处理Polygon或MultiPolygon
+      const processPolygon = (polyCoords: any) => {
+        const shape = new THREE.Shape();
+        
+        // 只处理外环（第一个环）
+        let ringCoords = polyCoords;
+        if (Array.isArray(polyCoords[0][0])) {
+          ringCoords = polyCoords[0];
+        } else if (Array.isArray(polyCoords[0])) {
+          ringCoords = polyCoords[0];
+        }
+        
+        if (ringCoords && ringCoords.length > 0) {
+          ringCoords.forEach((coord: [number, number], i: number) => {
+            const [x, y] = geoTo3D(coord[0], coord[1], level);
+            if (i === 0) {
+              shape.moveTo(x, y);
+            } else {
+              shape.lineTo(x, y);
+            }
+          });
+        }
+        
+        const extrudeSettings = {
+          steps: 1,
+          depth: 0.3,
+          bevelEnabled: false
+        };
+        
+        const geometry = new THREE.ExtrudeGeometry(shape, extrudeSettings);
+        geometry.center();
+        geometries.push(geometry);
       };
       
-      const geometry = new THREE.ExtrudeGeometry(shape, extrudeSettings);
-      geometry.center();
-      geometries.push(geometry);
-    };
-    
-    if (feature.geometry.type === 'MultiPolygon') {
-      coordinates.forEach((poly: any) => processPolygon(poly));
-    } else if (feature.geometry.type === 'Polygon') {
-      processPolygon(coordinates);
+      if (feature.geometry.type === 'MultiPolygon') {
+        coordinates.forEach((poly: any) => processPolygon(poly));
+      } else if (feature.geometry.type === 'Polygon') {
+        processPolygon(coordinates);
+      }
+      
+      const center = calculateCenter(coordinates, level);
+      return { geometries, center };
+    } catch (error) {
+      console.error('Error processing geometry:', error);
+      return { geometries: [], center: [0, 0] };
     }
-    
-    const center = calculateCenter(coordinates, level);
-    
-    return { geometries, center };
   }, [feature, level]);
 
   useFrame((_, delta) => {
@@ -147,6 +158,8 @@ const Region3D = ({
   });
 
   const color = provinceColors[index % provinceColors.length];
+
+  if (geometries.length === 0) return null;
 
   return (
     <group position={[center[0], center[1], height / 2]}>
@@ -194,31 +207,86 @@ const Region3D = ({
   );
 };
 
-// 地图数据加载组件
-const MapLoader = ({ 
-  adcode, 
-  onDataLoaded 
-}: { 
-  adcode: string;
-  onDataLoaded: (data: any) => void;
+// Fallback区域组件 - 简单的方块
+const FallbackRegion = ({
+  region,
+  index,
+  onClick,
+  onHover
+}: {
+  region: any;
+  index: number;
+  onClick: (region: any) => void;
+  onHover: (region: any) => void;
 }) => {
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await fetch(getMapDataUrl(adcode));
-        if (response.ok) {
-          const data = await response.json();
-          onDataLoaded(data);
-        }
-      } catch (error) {
-        console.error('Error loading map data:', error);
-      }
-    };
-    
-    fetchData();
-  }, [adcode, onDataLoaded]);
-  
-  return null;
+  const meshRef = useRef<THREE.Mesh>(null);
+  const [isHovered, setIsHovered] = useState(false);
+  const [scale, setScale] = useState(1);
+  const [height, setHeight] = useState(0.3);
+
+  // 计算网格布局位置
+  const total = 34;
+  const cols = 6;
+  const rows = Math.ceil(total / cols);
+  const col = index % cols;
+  const row = Math.floor(index / cols);
+  const x = (col - cols / 2) * 1.5;
+  const y = (row - rows / 2) * -1.2;
+
+  useFrame((_, delta) => {
+    if (meshRef.current) {
+      const targetScale = isHovered ? 1.1 : 1;
+      const targetHeight = isHovered ? 0.5 : 0.3;
+      
+      setScale(prev => THREE.MathUtils.lerp(prev, targetScale, delta * 5));
+      setHeight(prev => THREE.MathUtils.lerp(prev, targetHeight, delta * 5));
+      
+      meshRef.current.scale.set(scale, scale, 1);
+    }
+  });
+
+  const color = provinceColors[index % provinceColors.length];
+
+  return (
+    <group position={[x, y, height / 2]}>
+      <mesh
+        ref={meshRef}
+        onPointerOver={() => {
+          setIsHovered(true);
+          onHover(region);
+        }}
+        onPointerOut={() => {
+          setIsHovered(false);
+          onHover(null);
+        }}
+        onClick={(e) => {
+          e.stopPropagation();
+          onClick(region);
+        }}
+      >
+        <boxGeometry args={[1.2, 0.8, 0.3]} />
+        <meshStandardMaterial
+          color={color}
+          emissive={color}
+          emissiveIntensity={isHovered ? 0.6 : 0.2}
+          roughness={0.4}
+          metalness={0.2}
+          transparent
+          opacity={0.9}
+        />
+      </mesh>
+      
+      <Text
+        position={[0, 0, 0.4]}
+        fontSize={0.2}
+        color="#ffffff"
+        anchorX="center"
+        anchorY="middle"
+      >
+        {region.name}
+      </Text>
+    </group>
+  );
 };
 
 // 地图场景组件
@@ -226,10 +294,47 @@ const MapScene = () => {
   const { currentLevel, setCurrentLevel, setStats, setRegions } = useMapStore();
   const [hoveredFeature, setHoveredFeature] = useState<any>(null);
   const [mapData, setMapData] = useState<any>(null);
+  const [loadingError, setLoadingError] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
 
-  const handleDataLoaded = (data: any) => {
+  const handleDataLoaded = useCallback((data: any) => {
+    console.log('Map data loaded:', data);
     setMapData(data);
-  };
+    setIsLoading(false);
+    setLoadingError(false);
+  }, []);
+
+  const handleError = useCallback(() => {
+    console.log('Using fallback data');
+    setLoadingError(true);
+    setIsLoading(false);
+    setMapData(chinaGeoJSON);
+  }, []);
+
+  useEffect(() => {
+    setIsLoading(true);
+    setLoadingError(false);
+    
+    const fetchData = async () => {
+      try {
+        console.log('Fetching map data for:', currentLevel.currentCode);
+        const response = await fetch(getMapDataUrl(currentLevel.currentCode));
+        if (response.ok) {
+          const data = await response.json();
+          console.log('Data received:', data);
+          handleDataLoaded(data);
+        } else {
+          console.error('Response not ok:', response.status);
+          handleError();
+        }
+      } catch (error) {
+        console.error('Error loading map data:', error);
+        handleError();
+      }
+    };
+    
+    fetchData();
+  }, [currentLevel.currentCode, handleDataLoaded, handleError]);
 
   // 处理点击下钻
   const handleRegionClick = (feature: any) => {
@@ -239,27 +344,45 @@ const MapScene = () => {
       city: 'county'
     };
     
+    const adcode = feature.properties?.adcode || feature.adcode;
+    const name = feature.properties?.name || feature.name;
+    
     const nextLevel = nextLevelMap[currentLevel.level];
-    if (nextLevel && feature.properties.adcode) {
+    if (nextLevel && adcode) {
       setCurrentLevel({
         level: nextLevel,
-        currentCode: feature.properties.adcode,
-        name: feature.properties.name,
+        currentCode: adcode,
+        name: name,
         parentCode: currentLevel.currentCode
       });
       
       // 更新区域数据
-      const regions = getRegionsByLevel(nextLevel, feature.properties.adcode);
+      const regions = getRegionsByLevel(nextLevel, adcode);
       setRegions(regions);
       setStats(generateStats(regions));
     }
   };
 
+  // 渲染loading状态
+  if (isLoading) {
+    return (
+      <>
+        <ambientLight intensity={0.5} />
+        <pointLight position={[10, 10, 10]} color="#00d4ff" intensity={1.5} />
+        <Stars radius={100} depth={50} count={5000} factor={4} saturation={0} fade speed={1} />
+        <Text position={[0, 0, 0]} fontSize={1} color="#00d4ff" anchorX="center" anchorY="middle">
+          加载地图数据中...
+        </Text>
+      </>
+    );
+  }
+
+  // 获取要渲染的数据
+  const featuresToRender = mapData?.features || [];
+  const regionsFallback = getRegionsByLevel(currentLevel.level, currentLevel.currentCode);
+
   return (
     <>
-      {/* 加载当前级别的地图数据 */}
-      <MapLoader adcode={currentLevel.currentCode} onDataLoaded={handleDataLoaded} />
-      
       {/* 背景光效 */}
       <ambientLight intensity={0.5} />
       <pointLight position={[10, 10, 10]} color="#00d4ff" intensity={1.5} />
@@ -272,16 +395,26 @@ const MapScene = () => {
       {/* 网格地面 */}
       <gridHelper args={[30, 30, 0x00d4ff, 0x1e3a5f]} position={[0, 0, -0.1]} />
       
-      {/* 渲染地图区域 */}
-      {mapData && mapData.features && (
-        mapData.features.map((feature: any, index: number) => (
+      {/* 渲染地图区域 - 优先真实数据，否则fallback */}
+      {featuresToRender.length > 0 ? (
+        featuresToRender.map((feature: any, index: number) => (
           <Region3D
-            key={feature.properties.adcode || index}
+            key={feature.properties?.adcode || index}
             feature={feature}
             index={index}
             onClick={handleRegionClick}
             onHover={setHoveredFeature}
             level={currentLevel.level}
+          />
+        ))
+      ) : (
+        regionsFallback.map((region: any, index: number) => (
+          <FallbackRegion
+            key={region.adcode || index}
+            region={region}
+            index={index}
+            onClick={handleRegionClick}
+            onHover={setHoveredFeature}
           />
         ))
       )}
@@ -298,9 +431,16 @@ const MapScene = () => {
             anchorX="center"
             anchorY="middle"
           >
-            {hoveredFeature.properties.name}
+            {hoveredFeature.properties?.name || hoveredFeature.name}
           </Text>
         </mesh>
+      )}
+      
+      {/* 错误提示 */}
+      {loadingError && (
+        <Text position={[0, 8, 0]} fontSize={0.3} color="#f97316" anchorX="center" anchorY="middle">
+          使用本地数据演示
+        </Text>
       )}
     </>
   );
@@ -314,7 +454,14 @@ export const RealChinaMap3D = () => {
         camera={{ position: [0, 0, 25], fov: 60 }}
         dpr={[1, 2]}
       >
-        <Suspense fallback={null}>
+        <Suspense fallback={
+          <>
+            <ambientLight intensity={0.5} />
+            <Text position={[0, 0, 0]} fontSize={1} color="#00d4ff" anchorX="center" anchorY="middle">
+              初始化中...
+            </Text>
+          </>
+        }>
           <MapScene />
         </Suspense>
         <OrbitControls
